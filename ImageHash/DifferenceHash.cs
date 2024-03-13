@@ -1,9 +1,5 @@
 using SkiaSharp;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -53,15 +49,25 @@ namespace ImageHash
                 }
 
                 // Compute the difference between pixels and set the hash.
-                // If pixel[i] > pixel[i+1] set the i-th bit to 1, otherwise to 0.
+                // If leftPixel < rightPixel set the i-th bit to 1, otherwise to 0.
+                var mask = 1UL << ((HEIGHT * (WIDTH - 1)) - 1);
                 var hash = 0UL;
-                for (var i = 0; i < pixels.Length - 1; i++)
+
+                for (var y = 0; y < HEIGHT; y++)
                 {
-                    hash |= (ulong)(pixels[i] > pixels[i + 1] ? 1 : 0) << i;
+                    for (var x = 0; x < WIDTH - 1; x++)
+                    {
+                        var i = y * WIDTH + x;
+                        if (pixels[i] < pixels[i + 1])
+                        {
+                            hash |= mask;
+                        }
+
+                        mask >>= 1;
+                    }
                 }
 
                 return hash;
-
             }
         }
     }
